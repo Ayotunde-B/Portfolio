@@ -319,10 +319,8 @@ footer{background:var(--foot-bg);color:var(--foot-ink);border-top:1px solid var(
       <a href="https://github.com/Ayotunde-B" target="_blank" rel="noopener">⌥ GitHub</a>
     </div>
   </div>
-  <!-- To receive messages without opening the visitor's email app, create a free form at formspree.io
-       and paste its URL into action below (e.g. https://formspree.io/f/abcdwxyz). Until then, the form
-       opens the visitor's email app addressed to you. -->
-  <form id="cf" action="https://formspree.io/f/your-form-id" method="post">
+  <!-- Messages are sent through Formspree (formspree.io) to your email. -->
+  <form id="cf" action="https://formspree.io/f/xrpqedqq" method="post">
     <input type="hidden" name="_subject" value="New message from your portfolio">
     <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true">
     <label>Your name<input type="text" name="name" required autocomplete="name"></label>
@@ -412,20 +410,20 @@ window.addEventListener('scroll',onScroll,{passive:true});onScroll();
 
 /* contact form: Formspree if connected, otherwise open the visitor's email app */
 var cf=document.getElementById('cf'),fm=document.getElementById('fmsg');
+function fallbackMail(f){
+  var subj=(f.get('subject')||('Portfolio enquiry from '+f.get('name')));
+  var body=f.get('message')+'\n\n'+f.get('name')+' ('+f.get('email')+')';
+  fm.textContent='Opening your email app so you can send it from there…';
+  window.location.href='mailto:ay.odebunmi@gmail.com?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
+}
 cf.addEventListener('submit',function(e){
   e.preventDefault();
   var f=new FormData(cf);
-  if(cf.action.indexOf('your-form-id')>-1){
-    var subj=(f.get('subject')||('Portfolio enquiry from '+f.get('name')));
-    var body=f.get('message')+'\n\n'+f.get('name')+' ('+f.get('email')+')';
-    fm.textContent='Opening your email app…';
-    window.location.href='mailto:ay.odebunmi@gmail.com?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
-    return;
-  }
+  if(cf.action.indexOf('your-form-id')>-1){fallbackMail(f);return}
   fm.textContent='Sending…';
   fetch(cf.action,{method:'POST',body:f,headers:{Accept:'application/json'}})
-   .then(function(r){if(r.ok){cf.reset();fm.textContent='Thank you, your message has been sent.'}else{fm.textContent='Sorry, something went wrong. Please email me directly.'}})
-   .catch(function(){fm.textContent='Sorry, something went wrong. Please email me directly.'});
+   .then(function(r){return r.json().catch(function(){return {}}).then(function(j){if(r.ok&&!j.errors){cf.reset();fm.textContent='Thank you, your message has been sent.'}else{throw new Error('fail')}})})
+   .catch(function(){fallbackMail(f);});
 });
 toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})});
 })();
