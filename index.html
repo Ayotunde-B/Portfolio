@@ -1,234 +1,233 @@
-<!DOCTYPE HTML>
-<!--
-	Massively by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Capstone Project</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
+/* Portfolio interactivity: typing intro, scroll progress, project filters,
+   project detail modal, reveal-on-scroll, theme toggle, back-to-top,
+   and contact form validation. Plain JS, no dependencies. */
+(function () {
+	'use strict';
 
-		<!-- Wrapper -->
-			<div id="wrapper" class="fade-in">
+	var $ = function (sel, root) { return (root || document).querySelector(sel); };
+	var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+	var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-				<!-- Intro -->
-					<div id="intro">
-						<h1>Ayotunde Bisiriyu Business Analytics PORTFOLIO</h1>
-						<p>Hi, I’m Ayotunde Bisiriyu a healthcare professional and data analyst
-		with experience across healthcare operations, patient support,
-		customer service, and administration.</p>
+	function safeGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+	function safeSet(key, val) { try { localStorage.setItem(key, val); } catch (e) { /* ignore */ } }
 
-	<p>I use Microsoft Excel, Power BI, SQL, Power Query, and data
-		visualisation techniques to transform healthcare data into meaningful
-		insights that support better patient outcomes, operational efficiency,
-		and informed decision-making.</p>
-						<ul class="actions">
-							<li><a href="#header" class="button icon solid solo fa-arrow-down scrolly">Continue</a></li>
-						</ul>
-					</div>
+	/* ---------- Theme toggle (dark navy default, light grey option) ---------- */
+	var root = document.documentElement;
+	var themeBtn = document.createElement('button');
+	themeBtn.id = 'pf-theme';
+	themeBtn.type = 'button';
 
-				<!-- Header -->
-					<header id="header">
-						<a href="index.html" class="logo">Ayotunde Bisiriyu</a>
-					</header>
+	function applyTheme(theme) {
+		root.setAttribute('data-theme', theme);
+		themeBtn.textContent = theme === 'light' ? '☾' : '☀';
+		themeBtn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+	}
+	applyTheme(safeGet('pf-theme') || 'dark');
+	themeBtn.addEventListener('click', function () {
+		var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+		applyTheme(next);
+		safeSet('pf-theme', next);
+	});
+	document.body.appendChild(themeBtn);
 
-				<!-- Nav -->
-					<nav id="nav">
-						<ul class="links">
-							<li class="active"><a href="index.html">Projects</a></li>
-							<li><a href="generic.html">About Me</a></li>
-							<li><a href="elements.html">contact</a></li>
-						</ul>
-						<ul class="icons">
-							<li><a href="https://www.linkedin.com/in/ayotunde-bisiriyu-/" class="icon brands fa-linkedin"><span class="label"></span></a></li>
-                            <li><a href="https://github.com/Ayotunde-B" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
-						</ul>
-					</nav>
+	/* ---------- Scroll progress bar + back-to-top ---------- */
+	var bar = document.createElement('div');
+	bar.id = 'pf-progress';
+	document.body.appendChild(bar);
 
-				<!-- Main -->
-					<div id="main">
+	var topBtn = document.createElement('button');
+	topBtn.id = 'pf-top';
+	topBtn.type = 'button';
+	topBtn.textContent = '↑';
+	topBtn.setAttribute('aria-label', 'Back to top');
+	topBtn.addEventListener('click', function () {
+		window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+	});
+	document.body.appendChild(topBtn);
 
-						<!-- Featured Post -->
-							<article class="post featured">
-								<header>
-									<span class="date">
-									Capstone Project1 Microsoft Excel
-								</span>
-									<h2><a href="#">Healthcare patient appointment no show<br />
-									analysis</a></h2>
-									<p>An end-to-end healthcare analytics project examining appointment
-			no-show patterns across clinic branches, specialties, patient
-			demographics, previous attendance history, and scheduling periods.</p>
-								</header>
-								<a href="#" class="image main"><img src="images/no-show-dashboard.jpg" alt="Healthcare Patient Appointment No-Show Dashboard"/></a>
-								<ul class="actions special">
-									<li><a href="#" class="button large">View Project</a></li>
-								</ul>
-							</article>
+	function onScroll() {
+		var h = document.documentElement;
+		var max = h.scrollHeight - h.clientHeight;
+		bar.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + '%';
+		topBtn.classList.toggle('pf-show', window.scrollY > 600);
+	}
+	window.addEventListener('scroll', onScroll, { passive: true });
+	onScroll();
 
-						<!-- Posts -->
-							<section class="posts">
-								<article>
-									<header>
-										<span class="date">April 24, 2017</span>
-										<h2><a href="#">Sed magna<br />
-										ipsum faucibus</a></h2>
-									</header>
-									<a href="#" class="image fit"><img src="images/ pic02.jpg" alt="" /></a>
-									<p>Donec eget ex magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis magna etiam.</p>
-									<ul class="actions special">
-										<li><a href="#" class="button">Full Story</a></li>
-									</ul>
-								</article>
-								<article>
-									<header>
-										<span class="date">April 22, 2017</span>
-										<h2><a href="#">Primis eget<br />
-										imperdiet lorem</a></h2>
-									</header>
-									<a href="#" class="image fit"><img src="images/pic03.jpg" alt="" /></a>
-									<p>Donec eget ex magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis magna etiam.</p>
-									<ul class="actions special">
-										<li><a href="#" class="button">Full Story</a></li>
-									</ul>
-								</article>
-								<article>
-									<header>
-										<span class="date">April 18, 2017</span>
-										<h2><a href="#">Ante mattis<br />
-										interdum dolor</a></h2>
-									</header>
-									<a href="#" class="image fit"><img src="images/pic04.jpg" alt="" /></a>
-									<p>Donec eget ex magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis magna etiam.</p>
-									<ul class="actions special">
-										<li><a href="#" class="button">Full Story</a></li>
-									</ul>
-								</article>
-								<article>
-									<header>
-										<span class="date">April 14, 2017</span>
-										<h2><a href="#">Tempus sed<br />
-										nulla imperdiet</a></h2>
-									</header>
-									<a href="#" class="image fit"><img src="images/pic05.jpg" alt="" /></a>
-									<p>Donec eget ex magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis magna etiam.</p>
-									<ul class="actions special">
-										<li><a href="#" class="button">Full Story</a></li>
-									</ul>
-								</article>
-								<article>
-									<header>
-										<span class="date">April 11, 2017</span>
-										<h2><a href="#">Odio magna<br />
-										sed consectetur</a></h2>
-									</header>
-									<a href="#" class="image fit"><img src="images/pic06.jpg" alt="" /></a>
-									<p>Donec eget ex magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis magna etiam.</p>
-									<ul class="actions special">
-										<li><a href="#" class="button">Full Story</a></li>
-									</ul>
-								</article>
-								<article>
-									<header>
-										<span class="date">April 7, 2017</span>
-										<h2><a href="#">Augue lorem<br />
-										primis vestibulum</a></h2>
-									</header>
-									<a href="#" class="image fit"><img src="images/pic07.jpg" alt="" /></a>
-									<p>Donec eget ex magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis magna etiam.</p>
-									<ul class="actions special">
-										<li><a href="#" class="button">Full Story</a></li>
-									</ul>
-								</article>
-							</section>
+	/* ---------- Typing intro ---------- */
+	var typed = $('#pf-typed');
+	if (typed) {
+		var phrases = [
+			'Healthcare Data Analyst',
+			'Excel · Power BI · SQL · Power Query',
+			'Turning data into better patient outcomes'
+		];
+		var textNode = document.createElement('span');
+		var caret = document.createElement('span');
+		caret.className = 'pf-caret';
+		caret.setAttribute('aria-hidden', 'true');
+		typed.textContent = '';
+		typed.appendChild(textNode);
+		typed.appendChild(caret);
 
-						<!-- Footer -->
-							<footer>
-								<div class="pagination">
-									<!--<a href="#" class="previous">Prev</a>-->
-									<a href="#" class="page active">1</a>
-									<a href="#" class="page">2</a>
-									<a href="#" class="page">3</a>
-									<span class="extra">&hellip;</span>
-									<a href="#" class="page">8</a>
-									<a href="#" class="page">9</a>
-									<a href="#" class="page">10</a>
-									<a href="#" class="next">Next</a>
-								</div>
-							</footer>
+		if (reduceMotion) {
+			textNode.textContent = phrases[0];
+		} else {
+			var p = 0, c = 0, deleting = false;
+			(function tick() {
+				var full = phrases[p];
+				c += deleting ? -1 : 1;
+				textNode.textContent = full.slice(0, c);
+				var delay = deleting ? 35 : 70;
+				if (!deleting && c === full.length) { deleting = true; delay = 1600; }
+				else if (deleting && c === 0) { deleting = false; p = (p + 1) % phrases.length; delay = 350; }
+				setTimeout(tick, delay);
+			})();
+		}
+	}
 
-					</div>
+	/* ---------- Project data for the detail modal ---------- */
+	var projects = {
+		'no-show': {
+			title: 'Healthcare Patient Appointment No-Show Analysis',
+			tool: 'Microsoft Excel',
+			summary: 'An end-to-end analytics project examining appointment no-show patterns across clinic branches, specialties, patient demographics, previous attendance history, and scheduling periods.',
+			problem: 'Missed appointments waste clinical capacity and delay patient care.',
+			approach: 'Cleaned and structured the data, built pivot-based analysis, and designed a dashboard to compare no-show rates across branches, specialties and time periods.',
+			outcome: 'Surfaced the segments with the highest no-show rates so scheduling and reminder effort can be targeted.',
+			link: '#'
+		}
+	};
 
-				<!-- Footer -->
-					<footer id="footer">
-						<section>
-							<form method="post" action="#">
-								<div class="fields">
-									<div class="field">
-										<label for="name">Name</label>
-										<input type="text" name="name" id="name" />
-									</div>
-									<div class="field">
-										<label for="email">Email</label>
-										<input type="text" name="email" id="email" />
-									</div>
-									<div class="field">
-										<label for="message">Message</label>
-										<textarea name="message" id="message" rows="3"></textarea>
-									</div>
-								</div>
-								<ul class="actions">
-									<li><input type="submit" value="Send Message" /></li>
-								</ul>
-							</form>
-						</section>
-						<section class="split contact">
-							<section class="alt">
-								<h3>Address</h3>
-								<p>1234 Somewhere Road #87257<br />
-								Nashville, TN 00000-0000</p>
-							</section>
-							<section>
-								<h3>Phone</h3>
-								<p><a href="#">(000) 000-0000</a></p>
-							</section>
-							<section>
-								<h3>Email</h3>
-								<p><a href="#">info@untitled.tld</a></p>
-							</section>
-							<section>
-								<h3>Social</h3>
-								<ul class="icons alt">
-									<li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
-									<li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
-									<li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
-									<li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
-								</ul>
-							</section>
-						</section>
-					</footer>
+	/* ---------- Modal ---------- */
+	var modal = document.createElement('div');
+	modal.id = 'pf-modal';
+	modal.setAttribute('role', 'dialog');
+	modal.setAttribute('aria-modal', 'true');
+	modal.setAttribute('aria-hidden', 'true');
+	document.body.appendChild(modal);
+	var lastFocus = null;
 
-				<!-- Copyright -->
-					<div id="copyright">
-						<ul><li>&copy; Untitled</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
-					</div>
+	function esc(s) {
+		return String(s).replace(/[&<>"']/g, function (ch) {
+			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+		});
+	}
 
-			</div>
+	function openModal(key) {
+		var d = projects[key];
+		if (!d) { return; }
+		lastFocus = document.activeElement;
+		modal.innerHTML =
+			'<div class="pf-dialog" tabindex="-1">' +
+			'<button type="button" class="pf-close" aria-label="Close">&times;</button>' +
+			'<h3>' + esc(d.title) + '</h3>' +
+			'<p>' + esc(d.summary) + '</p>' +
+			'<dl>' +
+			'<dt>Tool</dt><dd>' + esc(d.tool) + '</dd>' +
+			'<dt>Problem</dt><dd>' + esc(d.problem) + '</dd>' +
+			'<dt>Approach</dt><dd>' + esc(d.approach) + '</dd>' +
+			'<dt>Outcome</dt><dd>' + esc(d.outcome) + '</dd>' +
+			'</dl>' +
+			(d.link && d.link !== '#' ? '<p style="margin-top:1.5em"><a class="button" href="' + esc(d.link) + '" target="_blank" rel="noopener">Open project</a></p>' : '') +
+			'</div>';
+		modal.classList.add('pf-open');
+		modal.setAttribute('aria-hidden', 'false');
+		document.body.style.overflow = 'hidden';
+		$('.pf-close', modal).focus();
+	}
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+	function closeModal() {
+		modal.classList.remove('pf-open');
+		modal.setAttribute('aria-hidden', 'true');
+		document.body.style.overflow = '';
+		if (lastFocus && lastFocus.focus) { lastFocus.focus(); }
+	}
 
-	</body>
-</html>
+	modal.addEventListener('click', function (e) {
+		if (e.target === modal || e.target.classList.contains('pf-close')) { closeModal(); }
+	});
+	document.addEventListener('keydown', function (e) {
+		if (e.key === 'Escape' && modal.classList.contains('pf-open')) { closeModal(); }
+	});
+
+	$$('[data-project]').forEach(function (el) {
+		el.addEventListener('click', function (e) {
+			e.preventDefault();
+			openModal(el.getAttribute('data-project'));
+		});
+	});
+
+	/* ---------- Category filters ---------- */
+	var filterBar = $('#pf-filters');
+	if (filterBar) {
+		var cards = $$('[data-category]');
+		var chips = $$('.pf-chip', filterBar);
+		chips.forEach(function (chip) {
+			chip.addEventListener('click', function () {
+				var cat = chip.getAttribute('data-filter');
+				chips.forEach(function (c) { c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'); });
+				cards.forEach(function (card) {
+					var cats = (card.getAttribute('data-category') || '').split(/\s+/);
+					var show = cat === 'all' || cats.indexOf(cat) !== -1;
+					card.classList.toggle('pf-hidden', !show);
+					if (show) {
+						card.classList.remove('pf-fade');
+						void card.offsetWidth; /* restart animation */
+						card.classList.add('pf-fade');
+					}
+				});
+			});
+		});
+	}
+
+	/* ---------- Reveal on scroll ---------- */
+	var revealEls = $$('.posts article, .post.featured');
+	revealEls.forEach(function (el) { el.classList.add('pf-reveal'); });
+	if ('IntersectionObserver' in window && !reduceMotion) {
+		var io = new IntersectionObserver(function (entries) {
+			entries.forEach(function (en) {
+				if (en.isIntersecting) { en.target.classList.add('pf-in'); io.unobserve(en.target); }
+			});
+		}, { threshold: 0.12 });
+		revealEls.forEach(function (el) { io.observe(el); });
+	} else {
+		revealEls.forEach(function (el) { el.classList.add('pf-in'); });
+	}
+
+	/* ---------- Contact form validation ---------- */
+	var form = $('#footer form');
+	if (form) {
+		var status = document.createElement('p');
+		status.className = 'pf-status';
+		status.setAttribute('role', 'status');
+		form.appendChild(status);
+
+		form.addEventListener('submit', function (e) {
+			e.preventDefault();
+			var name = $('#name', form), email = $('#email', form), msg = $('#message', form);
+			var errors = [];
+			[name, email, msg].forEach(function (f) { f.classList.remove('is-invalid'); });
+
+			if (!name.value.trim()) { errors.push('your name'); name.classList.add('is-invalid'); }
+			if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) { errors.push('a valid email'); email.classList.add('is-invalid'); }
+			if (msg.value.trim().length < 10) { errors.push('a message (10+ characters)'); msg.classList.add('is-invalid'); }
+
+			if (errors.length) {
+				status.style.color = '#d9534f';
+				status.textContent = 'Please enter ' + errors.join(', ') + '.';
+				return;
+			}
+
+			/* No backend is wired up yet. Open the visitor's mail app instead.
+			   Replace CONTACT_EMAIL with your real address. */
+			var CONTACT_EMAIL = 'your.email@example.com';
+			var href = 'mailto:' + CONTACT_EMAIL +
+				'?subject=' + encodeURIComponent('Portfolio enquiry from ' + name.value.trim()) +
+				'&body=' + encodeURIComponent(msg.value.trim() + '\n\n' + name.value.trim() + ' (' + email.value.trim() + ')');
+			status.style.color = 'inherit';
+			status.textContent = 'Opening your email app…';
+			window.location.href = href;
+		});
+	}
+})();
